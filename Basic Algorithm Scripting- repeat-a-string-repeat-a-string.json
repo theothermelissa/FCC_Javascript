@@ -1,0 +1,1 @@
+{"index.js":"function repeatStringNumTimes(str, num) {\n  let arr = [];\n  if (num >= 1) {\n  for (var i = 1; i <= num; i++) {\n  arr.push(str);\n  }\n  console.log(arr.join(''));\n  return arr.join('');\n}\n  else  {\n    return \"\";\n  }\n\n}\n\nrepeatStringNumTimes(\"abc\", 3);"}

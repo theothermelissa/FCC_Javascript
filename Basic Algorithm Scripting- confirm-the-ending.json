@@ -1,0 +1,1 @@
+{"index.js":"function confirmEnding(str, target) {\n  let strEnd = str.substr(-target.length, target.length);\n  if (strEnd === target) {\n    return true;\n  }\n  else {\n    return false;\n  }\n}\n\nconfirmEnding(\"Bastian\", \"n\");"}
