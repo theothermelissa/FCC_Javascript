@@ -5,7 +5,8 @@ function diffArray(arr1, arr2) {
   // console.log("2: ",arr2);
   // console.log("index of 5: ",arr2.indexOf(5));
 
-  // console.log("FilteredArr1: ",filteredArr1);  let filteredArr1 = arr1.filter(val => {
+  // console.log("FilteredArr1: ",filteredArr1);  
+  let filteredArr1 = arr1.filter(val => {
     return (arr2.indexOf(val)) <0;
   });
   let filteredArr2 = arr2.filter(val => {
