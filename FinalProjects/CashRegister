@@ -1,12 +1,5 @@
 function checkCashRegister(price, cash, cid) {
   
-  let changeDue = cash - price;
-  let transactionResult = {
-    "status": [],
-    "change": [],
-  };
-  let returnToBuyer = transactionResult.change;
-  let statusLog = transactionResult.status;
   let denominationIntegers = {
     "PENNY": 1,
     "NICKEL": 5,
@@ -18,57 +11,43 @@ function checkCashRegister(price, cash, cid) {
     "TWENTY": 2000,
     "ONE HUNDRED": 10000
   };
-
-  let brokeAndBackwards = changeDue.toFixed(2).split(".").reverse().map(Number);
-  let centsNeeded = brokeAndBackwards[0];
-  let dollarsNeeded = brokeAndBackwards[1]*100;
-  // console.log(JSON.stringify(brokeAndBackwards));
-  // console.log(JSON.stringify(centsNeeded))
-  
-  let nickelsNeeded;
-  let dimesNeeded;
-  let quartersNeeded;
-  let fivesNeeded;
-  let tensNeeded;
-  let hundredsNeeded;
   let remainder;
   let stillNeed;
-  
-  
-  let available = {};
-  for (var i = 0; i < cid.length; i++) {
-  available[cid[i][0]] = cid[i][1]*100;
+  let changeDue = (cash - price)*100;
+  console.log(changeDue)
+  let flattenedCID = cid.flat(1);
+  function isPositive(val) {
+    return val >= 0;
   }
-  // console.log(JSON.stringify(cid));
-  // console.log(JSON.stringify(available));
-
-  let availableHundreds = available["ONE HUNDRED"];
-  let availableTwenties = available["TWENTY"];
-  let availableTens = available["TEN"];
-  let availableFives = available["FIVE"];
-  let availableOnes = available["ONE"];
-  let availableQuarters = available["QUARTER"];
-  let availableDimes = available["DIME"];
-  let availableNickels = available["NICKEL"];
-  let availablePennies = available["PENNY"];
+  function integerize(val) {
+    return val*100;
+  }
+  let add = (a, b) =>
+  (a + b);
+  let totalAvailableChange = flattenedCID
+    .filter(isPositive)
+    .map(integerize)
+    .reduce(add);
+  console.log(JSON.stringify(totalAvailableChange));
+  let returnToBuyer = [];
+  let statusLog = ["OPEN"];
+  let transactionPrintout = {
+    "status": statusLog[0],
+    "change": returnToBuyer,
+    };
+  console.log(JSON.stringify(transactionPrintout));
   
-  // $4, 1, .25
-  //$.50, .25, .10
-
   let findRemainder = function(amount, nextDownDenom) {
     let stillNeed = amount % nextDownDenom;
     console.log(stillNeed);
     return stillNeed;
   }
-
-  let switchDenom = function(amount, nextDownDenom) {
+  let convertDenom = function(amount, nextDownDenom) {
     stillNeed = amount - (amount / nextDownDenom);
     console.log(stillNeed);
     return ans;
   };
-  
-
-  let takeFromDrawer = function(denom, needed, available) {
+  let takeFromDrawer = function(needed, units, available) {
     let whichDrawer = denominationIntegers[denom];
     if (needed > 0){
       if (needed === 0) {
@@ -86,13 +65,64 @@ function checkCashRegister(price, cash, cid) {
         stillNeed = 0;
         return stillNeed;
       } else {
-        
+        if (available > 0) {
+          stillNeed = needed - available;
+          needed = available;
+          returnToBuyer.push[whichDrawer, needed];
+          statusLog.push("CLOSED");
+          return stillNeed;
+        } else {
+          stillNeed = needed;
+          return stillNeed;
+        }
       }
-    } else if ()
+    } else {
+        stillNeed = 0;
+        statusLog.push("CLOSED");
+        return stillNeed;
+      }
+  }
+  let updatePrintout = function(newStatus, change) {
+    statusLog.unshift(newStatus);
+    transactionPrintout["status"] = newStatus;
+    if (change.length === 0) {
+      returnToBuyer = change;
+    } else {
+      returnToBuyer.push(change);
+    }
+    console.log(JSON.stringify(transactionPrintout));
   }
 
-  let makeChange = function(needed, available) {
-    //do a thing
+  if (totalAvailableChange === changeDue) {
+    updatePrintout("CLOSED", cid);
+    return transactionPrintout;
+  }
+
+
+  for (var i = 8; i >= 0; i--) {
+    let current = cid[i];
+    let denomName = current[0];
+    let nextDownDenom = cid[i-2][1];
+    let units = denominationIntegers[denomName];
+    let available = Math.round(current[1]*100);
+    console.log(denomName, available);
+    if (available >= changeDue) {
+      if (findRemainder(changeDue, nextDownDenom) === 0){
+        console.log(remainder);
+        updatePrintout()
+        
+      }
+    } else {
+      //
+    }
+  
+  };
+  
+
+  
+
+  let switchDenom = function(currentDenom) {
+    
   };
 
   let convertCoins = function(needed, available) {
@@ -221,7 +251,7 @@ function checkCashRegister(price, cash, cid) {
     //   returnToBuyer.push(["PENNY", centsNeeded]);
     //   statusLog.push("CLOSED");
     // } else if (centsNeeded > availablePennies) {
-    //     transactionResult["status"] = "INSUFFICIENT_FUNDS";
+    //     transactionPrintout["status"] = "INSUFFICIENT_FUNDS";
     // } else {
     //   returnToBuyer.push["PENNY", centsNeeded];
     //   statusLog.push("OPEN");
@@ -229,26 +259,26 @@ function checkCashRegister(price, cash, cid) {
   }
 
   // if (statusLog.indexOf("INSUFFICIENT_FUNDS") >= 0) {
-  //   transactionResult.status = "INSUFFICIENT_FUNDS";
+  //   transactionPrintout.status = "INSUFFICIENT_FUNDS";
   // } else if (statusLog.indexOf("OPEN") >= 0) {
-  //   transactionResult.status = "INSUFFICIENT_FUNDS";
+  //   transactionPrintout.status = "INSUFFICIENT_FUNDS";
   // } else {
-  //   transactionResult.status = "CLOSED";
+  //   transactionPrintout.status = "CLOSED";
   // };
 
 
-// console.log(transactionResult);  
+// console.log(transactionPrintout);  
 
 
 
 
-  return transactionResult;
+  return transactionPrintout;
 // }
 }
 
 
 
-checkCashRegister(19.5, 22, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
 
 // Example cash-in-drawer array:
 // [["PENNY", 1.01],
