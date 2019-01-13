@@ -1,20 +1,47 @@
 function checkCashRegister(price, cash, cid) {
   
+  let changeDue = cash - price;
   let transactionResult = {
     "status": [],
     "change": [],
   };
   let returnToBuyer = transactionResult.change;
   let statusLog = transactionResult.status;
-  let changeDue = cash - price;
-  let brokeAndBackwards = changeDue.toFixed(2).split("").reverse().map(Number);
-  console.log(JSON.stringify(brokeAndBackwards))
-  let centsNeeded = brokeAndBackwards[0]*.01 + brokeAndBackwards[1]*.1;
+  let denominationIntegers = {
+    "PENNY": 1,
+    "NICKEL": 5,
+    "DIME": 10,
+    "QUARTER": 25,
+    "ONE": 100,
+    "FIVE": 500,
+    "TEN": 1000,
+    "TWENTY": 2000,
+    "ONE HUNDRED": 10000
+  };
 
-  let dollarsNeeded = brokeAndBackwards[3];
-  let tensNeeded = brokeAndBackwards[4]*10;
-  let hundredsNeeded = brokeAndBackwards[5]*100;
+  let brokeAndBackwards = changeDue.toFixed(2).split(".").reverse().map(Number);
+  let centsNeeded = brokeAndBackwards[0];
+  let dollarsNeeded = brokeAndBackwards[1]*100;
+  // console.log(JSON.stringify(brokeAndBackwards));
+  // console.log(JSON.stringify(centsNeeded))
+  
+  let nickelsNeeded;
+  let dimesNeeded;
+  let quartersNeeded;
+  let fivesNeeded;
+  let tensNeeded;
+  let hundredsNeeded;
+  let remainder;
+  let stillNeed;
+  
+  
   let available = {};
+  for (var i = 0; i < cid.length; i++) {
+  available[cid[i][0]] = cid[i][1]*100;
+  }
+  // console.log(JSON.stringify(cid));
+  // console.log(JSON.stringify(available));
+
   let availableHundreds = available["ONE HUNDRED"];
   let availableTwenties = available["TWENTY"];
   let availableTens = available["TEN"];
@@ -25,186 +52,192 @@ function checkCashRegister(price, cash, cid) {
   let availableNickels = available["NICKEL"];
   let availablePennies = available["PENNY"];
   
-  for (var i = 0; i < cid.length; i++) {
-  available[cid[i][0]] = cid[i][1];
+  // $4, 1, .25
+  //$.50, .25, .10
+
+  let findRemainder = function(amount, nextDownDenom) {
+    let stillNeed = amount % nextDownDenom;
+    console.log(stillNeed);
+    return stillNeed;
   }
-  let nickelsNeeded, quartersNeeded, fivesNeeded, remainder;
+
+  let switchDenom = function(amount, nextDownDenom) {
+    stillNeed = amount - (amount / nextDownDenom);
+    console.log(stillNeed);
+    return ans;
+  };
   
-  // console.log(hundredsNeeded);
-  // if (hundredsNeeded > 0) {
-  //   if (hundredsNeeded == availableHundreds) {
-  //     returnToBuyer.push(["HUNDRED", hundredsNeeded]);
-  //     statusLog.push("CLOSED");
-  //   } else if (hundredsNeeded > availableHundreds) {
-  //     tensNeeded += hundredsNeeded;
-  //   } else {
-  //     returnToBuyer.push["HUNDRED", hundredsNeeded]
-  //     statusLog.push("OPEN");
-  //   }
-  //   console.log(JSON.stringify[transactionResult]);
-  // }
-  // console.log(tensNeeded);
-  // if (tensNeeded > 0) {
-  //   if (tensNeeded > 20) {
-  //     let twentiesNeeded = (tensNeeded-(tensNeeded % 20));
-  //     tensNeeded = tensNeeded%20;
-  //     if (twentiesNeeded === availableTwenties) {
-  //       returnToBuyer.push["TWENTY", twentiesNeeded];
-  //       statusLog.push("CLOSED");
-  //     } else if (twentiesNeeded > availableTwenties) {
-  //       tensNeeded += (twentiesNeeded - availableTwenties);
-  //       twentiesNeeded = availableTwenties;
-  //       returnToBuyer.push(["TWENTY", twentiesNeeded]);
-  //     } else {
-  //       returnToBuyer.push(["TWENTY", twentiesNeeded]);
-  //       statusLog.push("OPEN");
-  //     }
-  //   } 
-  //   if (tensNeeded === availableTens) {
-  //     returnToBuyer.push(["TEN", tensNeeded]);
-  //     statusLog.push("CLOSED");
-  //   } else if (tensNeeded > availableTens) {
-  //     fivesNeeded = (tensNeeded-availableTens);
-  //     tensNeeded = availableTens;
-  //     returnToBuyer.push[["TEN", tensNeeded]];
-  //   } else {
-  //     returnToBuyer.push["TEN", tensNeeded];
-  //     statusLog.push("OPEN");
-  //   }
-  //   console.log(JSON.stringify[transactionResult]);
-  // }
-  // console.log(fivesNeeded);
-  // if (fivesNeeded > 0) {
-  //   if (fivesNeeded === availableFives) {
-  //     returnToBuyer.push(["FIVE", fivesNeeded]);
-  //     statusLog.push("CLOSED");
-  //   } else if (fivesNeeded > availableFives) {
-  //     dollarsNeeded = (fivesNeeded-availableFives);
-  //     fivesNeeded = availableFives;
-  //     returnToBuyer.push[["FIVE", fivesNeeded]];
-  //   } else {
-  //     returnToBuyer.push["FIVE", fivesNeeded];
-  //     statusLog.push("OPEN");
-  //   }
-  //   console.log(JSON.stringify[transactionResult]);
-  // }
-  console.log(dollarsNeeded);
-  if (dollarsNeeded > 0) {
-    if (dollarsNeeded === availableOnes) {
-      returnToBuyer.push(["ONE", dollarsNeeded]);
-      statusLog.push("CLOSED");
-    } else if (dollarsNeeded > availableOnes) {
-      centsNeeded += (dollarsNeeded-availableOnes);
-      dollarsNeeded = availableOnes;
-      returnToBuyer.push[["ONE", dollarsNeeded]];
-    } else {
-      returnToBuyer.push["ONE", dollarsNeeded]
-      statusLog.push("OPEN");
-    }
-    console.log(JSON.stringify[transactionResult]);
-  }
-  
-  
-  console.log(centsNeeded);
-  if (centsNeeded > 0) {
-    if (centsNeeded < .05){
-      if (centsNeeded === availablePennies) {
-        returnToBuyer.push(["PENNY", centsNeeded]);
-        status.Log.push("CLOSED");
-      } else if ()
-    } else if (centsNeeded < .1){
 
-    } else if (centsNeeded < .25) {
-
-    }
-    if (dimesNeeded === availableDimes) {
-      returnToBuyer.push(["DIMES", dimesNeeded]);
-      statusLog.push("CLOSED");
-    } else if (dimesNeeded > .25) {
-        quartersNeeded = (dimesNeeded-(dimesNeeded*100 % 25));
-
-  // let twentiesNeeded = (tensNeeded-((tensNeeded* % 20));
-  //     tensNeeded = tensNeeded%20;
-  //     if (twentiesNeeded === availableTwenties) {
-  //       returnToBuyer.push["TWENTY", twentiesNeeded];
-  //       statusLog.push("CLOSED");
-  //     } else if (twentiesNeeded > availableTwenties) {
-  //       tensNeeded += (twentiesNeeded - availableTwenties);
-  //       twentiesNeeded = availableTwenties;
-  //       returnToBuyer.push(["TWENTY", twentiesNeeded]);
-  //     } else {
-  //       returnToBuyer.push(["TWENTY", twentiesNeeded]);
-  //       statusLog.push("OPEN");
-
-    } else if (dimesNeeded > availableDimes) {
-        remainder = dimesNeeded-availableDimes;
-        nickelsNeeded += remainder;
-        dimesNeeded = availableDimes;
-        returnToBuyer.push[["DIMES", dimesNeeded]];
+  let takeFromDrawer = function(denom, needed, available) {
+    let whichDrawer = denominationIntegers[denom];
+    if (needed > 0){
+      if (needed === 0) {
+        stillNeed = 0;
+        return stillNeed;
+      }
+      if (needed === available) {
+        returnToBuyer.push([whichDrawer, needed]);
+        statusLog.push("CLOSED");
+        stillNeed = 0;
+        return stillNeed;
+      } else if (needed < available) {
+        returnToBuyer.push([whichDrawer, needed]);
         statusLog.push("OPEN");
-    } else {
-      returnToBuyer.push["DIMES", dimesNeeded]
-    }
-    console.log(JSON.stringify[transactionResult]);
-  }
-  console.log(quartersNeeded);
-  if (quartersNeeded > 0) {
-    if (quartersNeeded === availableQuarters) {
-      returnToBuyer.push(["QUARTER", quartersNeeded]);
-      statusLog.push("CLOSED");
-    } else if (quartersNeeded > availableQuarters) {
-        remainder = quartersNeeded-availableQuarters;
-        dimesNeeded = (remainder-(remainder % 10));
-        nickelsNeeded = remainder % 10;
-        quartersNeeded = availableQuarters;
-        returnToBuyer.push[["QUARTER", quartersNeeded]]
-    } else {
-      returnToBuyer.push["QUARTER", quartersNeeded]
-      statusLog.push("OPEN");
-    }
-    console.log(JSON.stringify[transactionResult]);
+        stillNeed = 0;
+        return stillNeed;
+      } else {
+        
+      }
+    } else if ()
   }
 
-  
-  console.log(nickelsNeeded);
-  if (nickelsNeeded > 0) {
-    if (nickelsNeeded === availableNickels) {
-      returnToBuyer.push(["NICKEL", nickelsNeeded]);
-      statusLog.push("CLOSED");
-    } else if (nickelsNeeded > availableNickels) {
-        remainder = nickelsNeeded-availableNickels;
-        centsNeeded += remainder;
-        nickelsNeeded = availableNickels;
-        returnToBuyer.push[["NICKEL", nickelsNeeded]];
-    } else {
-      returnToBuyer.push["NICKEL", nickelsNeeded];
-      statusLog.push("OPEN");
-    }
-    console.log(JSON.stringify[transactionResult]);
-  }
-  console.log(centsNeeded);
-  if (centsNeeded > 0) {
-    if (centsNeeded === availablePennies) {
-      returnToBuyer.push(["PENNY", centsNeeded]);
-      statusLog.push("CLOSED");
-    } else if (centsNeeded > availablePennies) {
-        transactionResult["status"] = "INSUFFICIENT_FUNDS";
-    } else {
-      returnToBuyer.push["PENNY", centsNeeded];
-      statusLog.push("OPEN");
-    }
-    console.log(JSON.stringify[transactionResult]);
-  }
-
-  if (statusLog.indexOf("INSUFFICIENT_FUNDS") >= 0) {
-    transactionResult.status = "INSUFFICIENT_FUNDS";
-  } else if (statusLog.indexOf("OPEN") >= 0) {
-    transactionResult.status = "INSUFFICIENT_FUNDS";
-  } else {
-    transactionResult.status = "CLOSED";
+  let makeChange = function(needed, available) {
+    //do a thing
   };
 
-console.log(JSON.stringify(transactionResult));  
+  let convertCoins = function(needed, available) {
+    //do a thing
+  };
+
+
+  if (hundredsNeeded > 0) {
+    console.log(hundredsNeeded);
+    // if (hundredsNeeded == availableHundreds) {
+    //   returnToBuyer.push(["HUNDRED", hundredsNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (hundredsNeeded > availableHundreds) {
+    //   tensNeeded += hundredsNeeded;
+    // } else {
+    //   returnToBuyer.push["HUNDRED", hundredsNeeded]
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (tensNeeded > 0) {
+    console.log(tensNeeded);
+    // if (tensNeeded > 20) {
+    //   let twentiesNeeded = (tensNeeded-(tensNeeded % 20));
+    //   tensNeeded = tensNeeded%20;
+    //   if (twentiesNeeded === availableTwenties) {
+    //     returnToBuyer.push["TWENTY", twentiesNeeded];
+    //     statusLog.push("CLOSED");
+    //   } else if (twentiesNeeded > availableTwenties) {
+    //     tensNeeded += (twentiesNeeded - availableTwenties);
+    //     twentiesNeeded = availableTwenties;
+    //     returnToBuyer.push(["TWENTY", twentiesNeeded]);
+    //   } else {
+    //     returnToBuyer.push(["TWENTY", twentiesNeeded]);
+    //     statusLog.push("OPEN");
+    //   }
+    // } 
+    // if (tensNeeded === availableTens) {
+    //   returnToBuyer.push(["TEN", tensNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (tensNeeded > availableTens) {
+    //   fivesNeeded = (tensNeeded-availableTens);
+    //   tensNeeded = availableTens;
+    //   returnToBuyer.push[["TEN", tensNeeded]];
+    // } else {
+    //   returnToBuyer.push["TEN", tensNeeded];
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (fivesNeeded > 0) {
+    console.log(fivesNeeded);
+    // if (fivesNeeded === availableFives) {
+    //   returnToBuyer.push(["FIVE", fivesNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (fivesNeeded > availableFives) {
+    //   dollarsNeeded = (fivesNeeded-availableFives);
+    //   fivesNeeded = availableFives;
+    //   returnToBuyer.push[["FIVE", fivesNeeded]];
+    // } else {
+    //   returnToBuyer.push["FIVE", fivesNeeded];
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (dollarsNeeded > 0) {
+    console.log(dollarsNeeded);
+    // if (dollarsNeeded === availableOnes) {
+    //   returnToBuyer.push(["ONE", dollarsNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (dollarsNeeded > availableOnes) {
+    //   let quartersNeeded = (dollarsNeeded-availableOnes);
+    //   dollarsNeeded = availableOnes;
+    //   returnToBuyer.push[["ONE", dollarsNeeded]];
+    // } else {
+    //   returnToBuyer.push["ONE", dollarsNeeded]
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (quartersNeeded > 0) {
+    console.log(quartersNeeded);
+    // if (quartersNeeded === availableQuarters) {
+    //   returnToBuyer.push(["QUARTER", quartersNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (quartersNeeded > availableQuarters) {
+    //     remainder = quartersNeeded-availableQuarters;
+    //     dimesNeeded = (remainder-(remainder % 10));
+    //     nickelsNeeded = remainder % 10;
+    //     quartersNeeded = availableQuarters;
+    //     returnToBuyer.push[["QUARTER", quartersNeeded]]
+    // } else {
+    //   returnToBuyer.push["QUARTER", quartersNeeded]
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (dimesNeeded > 0) {
+    console.log(dimesNeeded);
+    // if (dimesNeeded === availableDimes) {
+    //   returnToBuyer.push(["DIMES", dimesNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (dimesNeeded > availableDimes) {
+    //     remainder = dimesNeeded-availableDimes;
+    //     nickelsNeeded += remainder;
+    //     dimesNeeded = availableDimes;
+    //     returnToBuyer.push[["DIMES", dimesNeeded]];
+    //     statusLog.push("OPEN");
+    // } else {
+    //   returnToBuyer.push["DIMES", dimesNeeded]
+    // }
+  }
+  if (nickelsNeeded > 0) {
+    console.log(nickelsNeeded);
+    // if (nickelsNeeded === availableNickels) {
+    //   returnToBuyer.push(["NICKEL", nickelsNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (nickelsNeeded > availableNickels) {
+    //     remainder = nickelsNeeded-availableNickels;
+    //     centsNeeded += remainder;
+    //     nickelsNeeded = availableNickels;
+    //     returnToBuyer.push[["NICKEL", nickelsNeeded]];
+    // } else {
+    //   returnToBuyer.push["NICKEL", nickelsNeeded];
+    //   statusLog.push("OPEN");
+    // }
+  }
+  if (centsNeeded > 0) {
+    console.log(centsNeeded);
+    // if (centsNeeded === availablePennies) {
+    //   returnToBuyer.push(["PENNY", centsNeeded]);
+    //   statusLog.push("CLOSED");
+    // } else if (centsNeeded > availablePennies) {
+    //     transactionResult["status"] = "INSUFFICIENT_FUNDS";
+    // } else {
+    //   returnToBuyer.push["PENNY", centsNeeded];
+    //   statusLog.push("OPEN");
+    // }
+  }
+
+  // if (statusLog.indexOf("INSUFFICIENT_FUNDS") >= 0) {
+  //   transactionResult.status = "INSUFFICIENT_FUNDS";
+  // } else if (statusLog.indexOf("OPEN") >= 0) {
+  //   transactionResult.status = "INSUFFICIENT_FUNDS";
+  // } else {
+  //   transactionResult.status = "CLOSED";
+  // };
+
+
+// console.log(transactionResult);  
 
 
 
@@ -215,4 +248,31 @@ console.log(JSON.stringify(transactionResult));
 
 
 
-checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+checkCashRegister(19.5, 22, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+
+// Example cash-in-drawer array:
+// [["PENNY", 1.01],
+// ["NICKEL", 2.05],
+// ["DIME", 3.1],
+// ["QUARTER", 4.25],
+// ["ONE", 90],
+// ["FIVE", 55],
+// ["TEN", 20],
+// ["TWENTY", 60],
+// ["ONE HUNDRED", 100]]
+
+  // if () {
+  //   working.unshift(denominations[]);
+  //   console.log(JSON.stringify(working));
+  // } else if (cents < 4) {
+  //   for (var i = 1; i <= cents; i++) {
+  //     working.unshift(denominations[1]);
+  //     console.log(JSON.stringify(working));
+  //   }
+  // } else if (cents < 9){
+  //   let centsOverFive = cents - 5;
+  //   for (i = 1; i <= centsOverFive; i++) {
+  //     working.unshift(denominations[1]);
+  //   }
+  //   working.unshift(denominations[5]);
+  //   console.log(JSON.stringify(working));
